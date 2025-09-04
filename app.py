@@ -8,7 +8,7 @@ import tempfile
 st.title("ONNX AI Demo from GitHub")
 
 # Raw URL GitHub
-onnx_url = "https://raw.githubusercontent.com/australia1/BDAI/main/model.onnx"
+onnx_url = "https://raw.githubusercontent.com/AustraliaSilver/BDAI/main/model.onnx"
 
 # Tải mô hình từ GitHub
 r = requests.get(onnx_url)
