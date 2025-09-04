@@ -7,35 +7,38 @@ import tempfile
 
 st.title("ONNX AI Demo from GitHub")
 
-# URL raw GitHub của mô hình
+# Raw URL GitHub
 onnx_url = "https://raw.githubusercontent.com/australia1/BDAI/main/model.onnx"
 
-# 1. Download mô hình
+# Tải mô hình từ GitHub
 r = requests.get(onnx_url)
-r.raise_for_status()  # đảm bảo tải thành công
-onnx_bytes = r.content
+if r.status_code != 200:
+    st.error(f"Cannot download ONNX model. Status code: {r.status_code}")
+else:
+    onnx_bytes = r.content
+    st.success("Model downloaded from GitHub!")
 
-# 2. Lưu file tạm và load mô hình
-with tempfile.NamedTemporaryFile(suffix=".onnx") as tmp_file:
-    tmp_file.write(onnx_bytes)
-    tmp_file.flush()
-    session = ort.InferenceSession(tmp_file.name)
+    # Lưu vào file tạm và load ONNX
+    with tempfile.NamedTemporaryFile(suffix=".onnx") as tmp_file:
+        tmp_file.write(onnx_bytes)
+        tmp_file.flush()
+        session = ort.InferenceSession(tmp_file.name)
 
-st.success("Model loaded!")
+    st.success("Model loaded!")
 
-# 3. Thông tin input/output
-input_name = session.get_inputs()[0].name
-output_name = session.get_outputs()[0].name
-st.write(f"Input: {input_name}, Output: {output_name}")
+    # Thông tin input/output
+    input_name = session.get_inputs()[0].name
+    output_name = session.get_outputs()[0].name
+    st.write(f"Input: {input_name}, Output: {output_name}")
 
-# 4. Upload CSV
-data_file = st.file_uploader("Upload CSV input data", type="csv")
-if data_file:
-    df = pd.read_csv(data_file)
-    st.write("Input preview:")
-    st.dataframe(df.head())
+    # Upload dữ liệu CSV
+    data_file = st.file_uploader("Upload CSV input data", type="csv")
+    if data_file:
+        df = pd.read_csv(data_file)
+        st.write("Input preview:")
+        st.dataframe(df.head())
 
-    input_data = df.to_numpy().astype(np.float32)
-    result = session.run(None, {input_name: input_data})
-    st.write("Model output:")
-    st.write(result[0])
+        input_data = df.to_numpy().astype(np.float32)
+        result = session.run(None, {input_name: input_data})
+        st.write("Model output:")
+        st.write(result[0])
