@@ -11,6 +11,7 @@ st.title("ONNX AI Demo from GitHub")
 onnx_url = "https://raw.githubusercontent.com/AustraliaSilver/BDAI/main/model.onnx"
 
 # Tải mô hình từ GitHub
+print("File size:", len(onnx_bytes), "bytes")
 r = requests.get(onnx_url)
 if r.status_code != 200:
     st.error(f"Cannot download ONNX model. Status code: {r.status_code}")
